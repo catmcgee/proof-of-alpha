@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import './reactCOIServiceWorker';
 import ZkappWorkerClient from './zkappWorkerClient';
-import { PublicKey, Field } from 'snarkyjs';
+import { PublicKey, Field, PrivateKey } from 'snarkyjs';
 import GradientBG from '../components/GradientBG.js';
 import styles from '../styles/Home.module.css';
+import { verify } from 'crypto';
 
 let transactionFee = 0.1;
 
@@ -13,11 +14,16 @@ export default function Home() {
     hasWallet: null as null | boolean,
     hasBeenSetup: false,
     accountExists: false,
-    currentNum: null as null | Field,
     publicKey: null as null | PublicKey,
     zkappPublicKey: null as null | PublicKey,
     creatingTransaction: false,
   });
+
+
+  const privateKey = PrivateKey.fromBase58(
+    process.env.PRIVATE_KEY ??
+      "EKEFbfuextCwUWrWBFj1NPvhQDiMP2wB4NiT6aCJJWRyhbjiTyuD"
+  );
 
   const [displayText, setDisplayText] = useState('');
   const [transactionlink, setTransactionLink] = useState('');
@@ -80,12 +86,13 @@ export default function Home() {
         );
 
         await zkappWorkerClient.initZkappInstance(zkappPublicKey);
+        console.log("verifying")
+        await zkappWorkerClient.verify(zkappPublicKey);
+
 
         console.log('Getting zkApp state...');
         setDisplayText('Getting zkApp state...');
         await zkappWorkerClient.fetchAccount({ publicKey: zkappPublicKey });
-        const currentNum = await zkappWorkerClient.getNum();
-        console.log(`Current number in zkApp state: ${currentNum.toString()}`);
         setDisplayText('');
 
         setState({
@@ -96,7 +103,6 @@ export default function Home() {
           publicKey,
           zkappPublicKey,
           accountExists,
-          currentNum,
         });
       }
     })();
@@ -128,60 +134,51 @@ export default function Home() {
   // -------------------------------------------------------
   // Send a transaction
 
-  // const onSendTransaction = async () => {
-  //   setState({ ...state, creatingTransaction: true });
+  const onSendTransaction = async () => {
+    setState({ ...state, creatingTransaction: true });
 
-  //   setDisplayText('Creating a transaction...');
-  //   console.log('Creating a transaction...');
+    setDisplayText('Creating a transaction...');
+    console.log('Creating a transaction...');
 
-  //   await state.zkappWorkerClient!.fetchAccount({
-  //     publicKey: state.publicKey!,
-  //   });
+    await state.zkappWorkerClient!.fetchAccount({
+      publicKey: state.publicKey!,
+    });
 
+    setDisplayText('Creating proof...');
+    console.log('Creating proof...');
+    await state.zkappWorkerClient!.proveUpdateTransaction();
 
-  //   setDisplayText('Creating proof...');
-  //   console.log('Creating proof...');
-  //   await state.zkappWorkerClient!.proveUpdateTransaction();
+    console.log('Requesting send transaction...');
+    setDisplayText('Requesting send transaction...');
+    const transactionJSON = await state.zkappWorkerClient!.getTransactionJSON();
+    console.log(transactionJSON)
 
-  //   console.log('Requesting send transaction...');
-  //   setDisplayText('Requesting send transaction...');
-  //   const transactionJSON = await state.zkappWorkerClient!.getTransactionJSON();
+    setDisplayText('Getting transaction JSON...');
+    console.log('Getting transaction JSON...');
+    const { hash } = await (window as any).mina.sendTransaction({
+      transaction: transactionJSON,
+      feePayer: {
+        fee: transactionFee,
+        memo: '',
+      },
+    });
 
-  //   setDisplayText('Getting transaction JSON...');
-  //   console.log('Getting transaction JSON...');
-  //   const { hash } = await (window as any).mina.sendTransaction({
-  //     transaction: transactionJSON,
-  //     feePayer: {
-  //       fee: transactionFee,
-  //       memo: '',
-  //     },
-  //   });
+    const transactionLink = `https://berkeley.minaexplorer.com/transaction/${hash}`;
+    console.log(`View transaction at ${transactionLink}`);
 
-  //   const transactionLink = `https://berkeley.minaexplorer.com/transaction/${hash}`;
-  //   console.log(`View transaction at ${transactionLink}`);
+    setTransactionLink(transactionLink);
+    setDisplayText(transactionLink);
 
-  //   setTransactionLink(transactionLink);
-  //   setDisplayText(transactionLink);
+    setState({ ...state, creatingTransaction: false });
 
-  //   setState({ ...state, creatingTransaction: false });
-  // };
+  
+
+  };
 
   // -------------------------------------------------------
   // Refresh the current state
 
-  const onRefreshCurrentNum = async () => {
-    console.log('Getting zkApp state...');
-    setDisplayText('Getting zkApp state...');
-
-    await state.zkappWorkerClient!.fetchAccount({
-      publicKey: state.zkappPublicKey!,
-    });
-    const currentNum = await state.zkappWorkerClient!.getNum();
-    setState({ ...state, currentNum });
-    console.log(`Current number in zkApp state: ${currentNum.toString()}`);
-    setDisplayText('');
-  };
-
+ 
   // -------------------------------------------------------
   // Create UI elements
 
@@ -237,16 +234,16 @@ export default function Home() {
     mainContent = (
       <div style={{ justifyContent: 'center', alignItems: 'center' }}>
         <div className={styles.center} style={{ padding: 0 }}>
-          Current Number in zkApp: {state.currentNum!.toString()}{' '}
+          Waddup
         </div>
         <button
           className={styles.card}
-          // onClick={onSendTransaction}
+          //  onClick= {ZkappWorkerClient.verify()}
           disabled={state.creatingTransaction}
         >
           Send Transaction
         </button>
-        <button className={styles.card} onClick={onRefreshCurrentNum}>
+        <button className={styles.card}>
           Get Latest State
         </button>
       </div>

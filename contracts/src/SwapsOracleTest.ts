@@ -14,7 +14,7 @@ import {
 const ORACLE_PUBLIC_KEY =
   'B62qphyUJg3TjMKi74T2rF8Yer5rQjBr1UyEG7Wg9XEYAHjaSiSqFv1';
 
-let proofsEnabled = false;
+let proofsEnabled = true;
 function createLocalBlockchain() {
   const Local = Mina.LocalBlockchain({ proofsEnabled });
   Mina.setActiveInstance(Local);

@@ -1,16 +1,22 @@
-import { Mina, PublicKey, fetchAccount } from 'snarkyjs';
+import { Mina, PublicKey, fetchAccount, Field, PrivateKey, Signature } from 'snarkyjs';
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import type { IncrementSecret } from '../../../contracts/src/IncrementSecret';
+import { SwapsOracle } from '../../../contracts/src/SwapsOracle';
+import { verify } from 'crypto';
 
 const state = {
-IncrementSecret: null as null | typeof IncrementSecret,
-  zkapp: null as null | IncrementSecret,
+  SwapsOracle: null as null | typeof SwapsOracle,
+  zkapp: null as null | SwapsOracle,
   transaction: null as null | Transaction,
 };
+
+const privateKey = PrivateKey.fromBase58(
+  process.env.PRIVATE_KEY ??
+    "EKEFbfuextCwUWrWBFj1NPvhQDiMP2wB4NiT6aCJJWRyhbjiTyuD"
+);
 
 // ---------------------------------------------------------------------------------------
 
@@ -23,11 +29,13 @@ const functions = {
     Mina.setActiveInstance(Berkeley);
   },
   loadContract: async (args: {}) => {
-    const { IncrementSecret } = await import('../../../contracts/build/src/IncrementSecret.js');
-    state.IncrementSecret = IncrementSecret;
+    const { SwapsOracle } = await import('../../../contracts/build/src/SwapsOracle.js');
+    state.SwapsOracle = SwapsOracle;
   },
   compileContract: async (args: {}) => {
-    await state.IncrementSecret!.compile();
+    const verificationKey = await state.SwapsOracle!.compile();
+    console.log("verificaion key", verificationKey.verificationKey.hash)
+
   },
   fetchAccount: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
@@ -35,19 +43,31 @@ const functions = {
   },
   initZkappInstance: async (args: { publicKey58: string }) => {
     const publicKey = PublicKey.fromBase58(args.publicKey58);
-    state.zkapp = new state.IncrementSecret!(publicKey);
+    state.zkapp = new state.SwapsOracle!(publicKey);
   },
-  getNum: async (args: {}) => {
-    const currentNum = await state.zkapp!.x.get();
-    return JSON.stringify(currentNum.toJSON());
+
+  verify: async (args: { publicKey58: string }) => {
+    const signature = Signature.create(privateKey, [Field(7159974168815450070709196962939807), Field(7159974168815450070709196962939807)]);
+    const publicKey = PublicKey.fromBase58(args.publicKey58);
+   // create the tx
+    const tx = await Mina.transaction(publicKey, () => state.zkapp.verify(Field(7159974168815450070709196962939807), Field(7159974168815450070709196962939807), signature));
+    // this runs your zk circuit in a proving mode, and all account updates created within your method (implicitly) are going to have the proof of execution attached to them
+    await tx.prove();
+
+    // sends the tx, which is just a bunch of account updates to the L1, the L1 looks at the account updates and sees they are authorized by a proof, so it verifies the proof - if its valid the account updates are applied on the L1 state and you can see the results of your contract execution
+    await tx.send();
+    await tx.sign([privateKey]);
+
   },
- 
-//   proveUpdateTransaction: async (args: {}) => {
-//     await state.transaction!.prove();
-//   },
-//   getTransactionJSON: async (args: {}) => {
-//     return state.transaction!.toJSON();
-//   },
+  proveUpdateTransaction: async (args: {}) => {
+    await state.transaction!.prove();
+  },
+
+  getTransactionJSON: async (args: {}) => {
+    return state.transaction!.toJSON();
+  },
+
+
 };
 
 // ---------------------------------------------------------------------------------------

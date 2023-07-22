@@ -16,6 +16,13 @@
       "feepayerAlias": "cat",
       "fee": "0.1",
       "smartContract": "IncrementSecret"
+    },
+    "proof-of-alpha-1": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/proof-of-alpha-1.json",
+      "feepayerKeyPath": "/Users/cat/.cache/zkapp-cli/keys/cat.json",
+      "feepayerAlias": "cat",
+      "fee": "0.1"
     }
   }
 }

@@ -9,6 +9,7 @@ import {
   PublicKey,
   Signature,
   PrivateKey,
+  Provable,
 } from 'snarkyjs';
 
 // The public key of our trusted data provider
@@ -21,7 +22,7 @@ export class SwapsOracle extends SmartContract {
 
   // Define contract events
   events = {
-    verified: Field,
+    verified: Provable.Array(Field, 2),
   };
 
   deploy(args: DeployArgs) {
@@ -32,8 +33,8 @@ export class SwapsOracle extends SmartContract {
     });
   }
 
-  @method init(zkappKey: PrivateKey) {
-    super.init(zkappKey);
+  @method init() {
+    super.init();
     // Initialize contract state
     this.oraclePublicKey.set(PublicKey.fromBase58(ORACLE_PUBLIC_KEY));
     // Specify that caller should include signature with tx instead of proof

@@ -4,9 +4,7 @@ const { isReady, PrivateKey, Field, Signature } = require("snarkyjs");
 const { request, gql } = require('graphql-request');
 const BigInt = require('big-integer'); // npm install big-integer
 
-
-
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 const app = new Koa();
 const router = new Router();
@@ -44,10 +42,6 @@ async function getSignedTransactionData(transactionId) {
   console.log("Transaction Id: ", transactionId);
   await isReady;
 
-  const privateKey = PrivateKey.fromBase58(
-    process.env.PRIVATE_KEY ??
-      "EKF65JKw9Q1XWLDZyZNGysBbYG21QbJf3a4xnEoZPZ28LKYGMw53"
-  );
   
   // Get transaction details
   const dataResponse = await getTransactionData(transactionId);

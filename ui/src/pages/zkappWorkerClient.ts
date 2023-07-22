@@ -38,19 +38,18 @@ export default class ZkappWorkerClient {
     });
   }
 
-  async getNum(): Promise<Field> {
-    const result = await this._call('getNum', {});
-    return Field.fromJSON(JSON.parse(result as string));
+  verify(publicKey: PublicKey) {
+    return this._call('verify', {});
   }
 
-  // proveUpdateTransaction() {
-  //   return this._call('proveUpdateTransaction', {});
-  // }
-
-  // async getTransactionJSON() {
-  //   const result = await this._call('getTransactionJSON', {});
-  //   return result;
-  // }
+  proveUpdateTransaction() {
+    return this._call('proveUpdateTransaction', {});
+  }
+x
+  async getTransactionJSON() {
+    const result = await this._call('getTransactionJSON', {});
+    return result;
+  }
 
   // ---------------------------------------------------------------------------------------
 
