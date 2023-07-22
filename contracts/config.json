@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "deployAliases": {
+    "proof-of-alpha": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/proof-of-alpha.json",
+      "feepayerKeyPath": "/Users/cat/.cache/zkapp-cli/keys/cat.json",
+      "feepayerAlias": "cat",
+      "fee": "0.1",
+      "smartContract": "Add"
+    },
+    "deploy-1": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/deploy-1.json",
+      "feepayerKeyPath": "/Users/cat/.cache/zkapp-cli/keys/cat.json",
+      "feepayerAlias": "cat",
+      "fee": "0.1",
+      "smartContract": "IncrementSecret"
+    }
+  }
+}

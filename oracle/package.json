@@ -1,0 +1,36 @@
+{
+  "name": "mina-credit-score-signer",
+  "version": "1.0.0",
+  "description": "Koa API that signs a specified user’s fake credit score with a Mina compatible signature scheme.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "keygen": "node scripts/keygen.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackryanservia/mina-credit-score-signer.git"
+  },
+  "keywords": [
+    "mina",
+    "snarkyjs",
+    "koa",
+    "zk",
+    "credential"
+  ],
+  "author": "Jack Ryan Servia",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jackryanservia/mina-credit-score-signer/issues"
+  },
+  "homepage": "https://github.com/jackryanservia/mina-credit-score-signer#readme",
+  "dependencies": {
+    "@koa/router": "^12.0.0",
+    "axios": "^1.4.0",
+    "axois": "^0.0.1-security",
+    "big-integer": "^1.6.51",
+    "koa": "^2.14.2",
+    "snarkyjs": "^0.6.1"
+  }
+}
