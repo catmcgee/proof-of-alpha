@@ -45,7 +45,7 @@ async function getSignedTransactionData(transactionId) {
   
   // Get transaction details
   const dataResponse = await getTransactionData(transactionId);
-  const transaction = dataResponse.transactions[0].swaps[0];  // assuming each transaction only has one swap
+  const transaction = dataResponse.transactions[0].swaps[0]; 
   console.log(transaction)
   const walletIdBigInt = BigInt(transaction.recipient.substring(2), 16); // Remove `0x` and convert from base16
   const walletId = Field(walletIdBigInt.toString()); // Convert BigInt to base10 string and then create a Field

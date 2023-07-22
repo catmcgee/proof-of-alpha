@@ -39,7 +39,7 @@ export default class ZkappWorkerClient {
   }
 
   verify(publicKey: PublicKey) {
-    return this._call('verify', {});
+    return this._call('verify', {publicKey58: publicKey.toBase58()});
   }
 
   proveUpdateTransaction() {

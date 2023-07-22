@@ -1,4 +1,5 @@
 import { Mina, PublicKey, fetchAccount, Field, PrivateKey, Signature } from 'snarkyjs';
+const BigInt = require('big-integer'); // npm install big-integer
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
@@ -47,14 +48,22 @@ const functions = {
   },
 
   verify: async (args: { publicKey58: string }) => {
-    const signature = Signature.create(privateKey, [Field(7159974168815450070709196962939807), Field(7159974168815450070709196962939807)]);
+    const txBigInt = BigInt("0xaecc64a55d46551E410d3875201E9B8cd63827Eb".substring(2),16)
+    const txId = Field(txBigInt);
+    console.log("txid", txId)
+    console.log("txid to string", txId.toString())
+
+    const walletBigInt = BigInt("0xaecc64a55d46551E410d3875201E9B8cd63827Eb".substring(2),16)
+    const walletId = Field(walletBigInt);
+    console.log("walletid", txId)
+    console.log("walletid to string", walletId.toString())
+
+
+    const signature = Signature.create(privateKey, [txId, walletId]);
     const publicKey = PublicKey.fromBase58(args.publicKey58);
    // create the tx
-    const tx = await Mina.transaction(publicKey, () => state.zkapp.verify(Field(7159974168815450070709196962939807), Field(7159974168815450070709196962939807), signature));
-    // this runs your zk circuit in a proving mode, and all account updates created within your method (implicitly) are going to have the proof of execution attached to them
+    const tx = await Mina.transaction(publicKey, () => state.zkapp.verify(txId, walletId, signature));
     await tx.prove();
-
-    // sends the tx, which is just a bunch of account updates to the L1, the L1 looks at the account updates and sees they are authorized by a proof, so it verifies the proof - if its valid the account updates are applied on the L1 state and you can see the results of your contract execution
     await tx.send();
     await tx.sign([privateKey]);
 
