@@ -1,5 +1,5 @@
-import { Mina, PublicKey, fetchAccount, Field, PrivateKey, Signature } from 'snarkyjs';
-const BigInt = require('big-integer'); // npm install big-integer
+import { Mina, PublicKey, fetchAccount, Field, PrivateKey, Signature, Provable } from 'snarkyjs';
+const BigInt = require('big-integer'); 
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 

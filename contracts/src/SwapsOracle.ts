@@ -12,6 +12,9 @@ import {
   Provable,
 } from 'snarkyjs';
 
+const PUBLIC_KEY = PublicKey.fromBase58(
+  'B62qqjv12hTPp89MG5xEyoKobEbumzXiWgjEjZ9eLrD8aGa3Pf56JFU'
+);
 // The public key of our trusted data provider
 const ORACLE_PUBLIC_KEY =
   'B62qphyUJg3TjMKi74T2rF8Yer5rQjBr1UyEG7Wg9XEYAHjaSiSqFv1';
@@ -47,7 +50,7 @@ export class SwapsOracle extends SmartContract {
     this.oraclePublicKey.assertEquals(oraclePublicKey);
 
     // Evaluate whether the signature is valid for the provided data
-    const validSignature = signature.verify(oraclePublicKey, [id, walletId]);
+    const validSignature = signature.verify(PUBLIC_KEY, [id, walletId]);
 
     // Check that the signature is valid
     validSignature.assertTrue();
