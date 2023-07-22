@@ -42,10 +42,14 @@ async function getSignedTransactionData(transactionId) {
   console.log("Transaction Id: ", transactionId);
   await isReady;
 
+  const privateKey = PrivateKey.fromBase58(
+    process.env.PRIVATE_KEY ??
+      "EKEMMSEuAK8ybJ7Vxuf4Br4CtSZ8t7utt7ycgSjvRariHKVQQrck"
+  );
   
   // Get transaction details
   const dataResponse = await getTransactionData(transactionId);
-  const transaction = dataResponse.transactions[0].swaps[0]; 
+  const transaction = dataResponse.transactions[0].swaps[0];  // assuming each transaction only has one swap
   console.log(transaction)
   const walletIdBigInt = BigInt(transaction.recipient.substring(2), 16); // Remove `0x` and convert from base16
   const walletId = Field(walletIdBigInt.toString()); // Convert BigInt to base10 string and then create a Field
@@ -55,11 +59,17 @@ async function getSignedTransactionData(transactionId) {
   const id = Field(transactionId);
   console.log("public key", publicKey, "and id", id)
   const signature = Signature.create(privateKey, [id, walletId]);
-    console.log("signature", signature)
-  console.log("Public Key: ", publicKey);
-  console.log("Transaction Data: ", transaction);
+  
+  // Before returning, to ensure nothing changes
+console.log("Returning data:", {
+  data: { id: id, walletId: walletId },
+  signature: signature,
+  publicKey: publicKey,
+});
+
 
   return {
+    
     data: { id: id, walletId: walletId },
     signature: signature,
     publicKey: publicKey,
@@ -69,6 +79,11 @@ async function getSignedTransactionData(transactionId) {
 router.get("/transaction/:id", async (ctx) => {
   const result = await getSignedTransactionData(ctx.params.id);
   ctx.body = result;
+  // After creating signature and publicKey
+console.log("Signature: ", signature);
+console.log("Public Key: ", publicKey);
+
+
 });
 
 

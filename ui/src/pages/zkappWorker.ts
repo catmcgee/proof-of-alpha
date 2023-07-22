@@ -48,7 +48,8 @@ const functions = {
   },
 
   verify: async (args: { publicKey58: string }) => {
-    const txBigInt = BigInt("0xaecc64a55d46551E410d3875201E9B8cd63827Eb".substring(2),16)
+    
+    const txBigInt = BigInt("0x07aac1d5997e4cb1c6bd88b15ab4500ef7dfe0b70919fdb69da62d9398e0b7bf".substring(2),16)
     const txId = Field(txBigInt);
     console.log("txid", txId)
     console.log("txid to string", txId.toString())
@@ -61,8 +62,12 @@ const functions = {
 
     const signature = Signature.create(privateKey, [txId, walletId]);
     const publicKey = PublicKey.fromBase58(args.publicKey58);
+    // Before calling verify function
+console.log("Public Key being passed to verify: ", publicKey);
+
    // create the tx
-    const tx = await Mina.transaction(publicKey, () => state.zkapp.verify(txId, walletId, signature));
+    const tx = await Mina.transaction(publicKey, () => state.zkapp.verify(txId, walletId, publicKey, signature)
+    );
     await tx.prove();
     await tx.send();
     await tx.sign([privateKey]);

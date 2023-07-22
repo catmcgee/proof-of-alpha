@@ -22,7 +22,7 @@ export default function Home() {
 
   const privateKey = PrivateKey.fromBase58(
     process.env.PRIVATE_KEY ??
-      "EKEFbfuextCwUWrWBFj1NPvhQDiMP2wB4NiT6aCJJWRyhbjiTyuD"
+      "EKEMMSEuAK8ybJ7Vxuf4Br4CtSZ8t7utt7ycgSjvRariHKVQQrck"
   );
 
   const [displayText, setDisplayText] = useState('');
@@ -82,7 +82,7 @@ export default function Home() {
         setDisplayText('zkApp compiled...');
 
         const zkappPublicKey = PublicKey.fromBase58(
-          'B62qqjv12hTPp89MG5xEyoKobEbumzXiWgjEjZ9eLrD8aGa3Pf56JFU'
+          'B62qpTtGBS5WjpQWzsu6rj8Z7pSvxQaXjABt8AnZg48Z8AsaCnCYTtW'
         );
 
         await zkappWorkerClient.initZkappInstance(zkappPublicKey);
