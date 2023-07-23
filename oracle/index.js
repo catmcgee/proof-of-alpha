@@ -11,6 +11,7 @@ const router = new Router();
 
 const endpoint = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';  // replace with the actual endpoint
 
+// hardcoded transaction id for testing
 const GET_TRANSACTION = gql`
 {
   transactions(where: {id: "0x07aac1d5997e4cb1c6bd88b15ab4500ef7dfe0b70919fdb69da62d9398e0b7bf"}) {
@@ -38,8 +39,6 @@ async function getTransactionData(id) {
 }
 
 async function getSignedTransactionData(transactionId) {
-  console.log("Inside getSignedTransactionData function");
-  console.log("Transaction Id: ", transactionId);
   await isReady;
 
   const privateKey = PrivateKey.fromBase58(
@@ -50,16 +49,12 @@ async function getSignedTransactionData(transactionId) {
   // Get transaction details
   const dataResponse = await getTransactionData(transactionId);
   const transaction = dataResponse.transactions[0].swaps[0];  // assuming each transaction only has one swap
-  console.log(transaction)
   const walletIdBigInt = BigInt(transaction.recipient.substring(2), 16); // Remove `0x` and convert from base16
   const walletId = Field(walletIdBigInt.toString()); // Convert BigInt to base10 string and then create a Field
-  console.log("wallet id", walletId)
     
   const publicKey = privateKey.toPublicKey();
   const id = Field(transactionId);
-  console.log("public key", publicKey, "and id", id)
   const signature = Signature.create(privateKey, [id, walletId]);
-  console.log("signature from oracle", signature)
 
 
   return {

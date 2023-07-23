@@ -47,26 +47,24 @@ export class SwapsOracle extends SmartContract {
     publicKey: PublicKey,
     signature: Signature
   ) {
-    return true;
-    // This works for Angus but currently not on my machine - so just returning true for now
     // Get the oracle public key from the contract state
-    // const oraclePublicKey = this.oraclePublicKey.get();
-    // this.oraclePublicKey.assertEquals(oraclePublicKey);
-    // // Before verifying signature
-    // console.log('Verifying signature with publicKey:', publicKey);
-    // // Evaluate whether the signature is valid for the provided data
-    // const validSignature = signature.verify(publicKey, [id, walletId]);
-    // console.log('Valid Signature?: ', validSignature);
-    // Provable.asProver(() => {
-    //   const boolValue = validSignature.toBoolean();
-    //   console.log('Valid Signature2 ?: ', boolValue);
-    //   console.log('id is', id.toString());
-    //   console.log('walletid is', walletId.toString());
-    //   console.log('signature is', signature);
-    // });
-    // validSignature.assertTrue();
-    // console.log('assert thing', validSignature.assertTrue());
-    // // Emit an event containing the verified transaction id and their wallet address
-    // this.emitEvent('verified', [id, walletId]);
+    const oraclePublicKey = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(oraclePublicKey);
+    // Before verifying signature
+    console.log('Verifying signature with publicKey:', publicKey);
+    // Evaluate whether the signature is valid for the provided data
+    const validSignature = signature.verify(publicKey, [id, walletId]);
+    console.log('Valid Signature?: ', validSignature);
+    Provable.asProver(() => {
+      const boolValue = validSignature.toBoolean();
+      console.log('Valid Signature2 ?: ', boolValue);
+      console.log('id is', id.toString());
+      console.log('walletid is', walletId.toString());
+      console.log('signature is', signature);
+    });
+    validSignature.assertTrue();
+    console.log('assert thing', validSignature.assertTrue());
+    // Emit an event containing the verified transaction id and their wallet address
+    this.emitEvent('verified', [id, walletId]);
   }
 }

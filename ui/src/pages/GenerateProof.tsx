@@ -90,7 +90,6 @@ export default function GenerateProof() {
         );
 
         await zkappWorkerClient.initZkappInstance(zkappPublicKey);
-        console.log("verifying")
         await zkappWorkerClient.verify(zkappPublicKey);
 
 
