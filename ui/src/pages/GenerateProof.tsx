@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import './reactCOIServiceWorker';
 import ZkappWorkerClient from './zkappWorkerClient';
 import { PublicKey, Field, PrivateKey } from 'snarkyjs';
-import QRCode from 'qrcode';
 
 let transactionFee = 0.1;
 
@@ -176,22 +175,8 @@ export default function GenerateProof() {
 
     setState({ ...state, creatingTransaction: false });
 
-  
-
   };
 
-  useEffect(() => {
-    const getZkProofImage = async () => {
-        if (!transactionHash) return;
-        try {
-            const url = await QRCode.toDataURL(transactionHash);
-            setImageData(url);
-        } catch (err) {
-            console.log('Error generating QR code', err);
-        }
-    }
-    getZkProofImage();
-}, [transactionHash]);
 
   // -------------------------------------------------------
   // Refresh the current state
@@ -222,16 +207,34 @@ export default function GenerateProof() {
   ) : (
     displayText
   );
+  let loadingText = displayText;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDisplayText(oldText => oldText + ".");
+    }, 500); // Append 'dot' every 500ms
+    return () => clearInterval(interval);
+  }, [loadingText]);
 
   let setup = (
-    <div
-     
-      style={{ fontWeight: 'bold', fontSize: '1.5rem', paddingBottom: '5rem' }}
-    >
-      {stepDisplay}
+    <div className="font-bold text-2xl pb-20">
+      {loadingText}
       {hasWallet}
     </div>
   );
+
+  let mainContent;
+  if (state.hasBeenSetup && state.accountExists) {
+    mainContent = (
+      <div className="flex flex-col items-center justify-center space-y-4 h-screen">
+        <img className="max-w-xs md:max-w-sm" src="http://localhost:9000/assets/qr-code.png" alt='Proof image with QR code' />
+        <p className="text-sm text-center whitespace-pre-wrap break-words w-2/3">http://localhost/B62qizDkmrBBFjPUmgBzRHrVMGWKZQqAEWuuofVYY7FeDcwAYqn8E11</p>
+        <button className='py-2 px-4 mt-2 font-semibold rounded-lg shadow-md text-white bg-blue-500 hover:bg-blue-700' onClick={copyImageToClipboard}>Copy Image</button>
+      </div>
+    );
+  }
+  
+  
+
 
   let accountDoesNotExist;
   if (state.hasBeenSetup && !state.accountExists) {
@@ -249,25 +252,9 @@ export default function GenerateProof() {
 
   
 
-  let mainContent;
-  if (state.hasBeenSetup && state.accountExists) {
-    mainContent = (
-      <div style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ padding: 0 }}>
-          {imageData && 
-            <div>
-              <img ref={imgRef} src={imageData} alt='Proof image with QR code' />
-              <button onClick={copyImageToClipboard}>Copy Image</button>
-            </div>
-          }
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="p-6 max-w-sm mx-auto bg-gray-800 rounded-xl shadow-md flex items-center space-x-4">
+      <div className="p-6 max-w-sm mx-auto bg-gray-800 rounded-xl shadow-md flex items-center space-x-4 text-white">
         <div className="flex-shrink-0">
           {setup}
           {accountDoesNotExist}
@@ -276,4 +263,4 @@ export default function GenerateProof() {
       </div>
     </div>
   );
-}
+  }
