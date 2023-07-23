@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-const ethers = require("ethers");
+import { ethers } from 'ethers'
 
 const ConnectWallet = ({ setAddress, address }) => {
     const [provider, setProvider] = useState(null);
@@ -39,10 +39,10 @@ const ConnectWallet = ({ setAddress, address }) => {
 
     return (
         !address &&
-        <div className="min-h-screen min-w-screen flex items-center justify-center">
+        <div className="flex items-center justify-center">
             <button  
                 onClick={connectWallet}
-                className='py-2 px-4 animate-gradient bg-gradient-to-r from-purple-800 to-blue-700 text-white text-sm font-semibold rounded-full shadow-md hover:from-purple-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-500'>
+                className='py-3 px-5 text-base animate-gradient bg-gradient-to-r from-purple-800 to-blue-700 text-white font-semibold rounded-full shadow-md hover:from-purple-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-500'>
                 Connect Wallet
             </button>
         </div>

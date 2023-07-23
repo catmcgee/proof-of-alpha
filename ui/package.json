@@ -15,6 +15,7 @@
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
     "canvas": "^2.11.2",
+    "cors": "^2.8.5",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.11",
     "ethers": "^5.7.2",
