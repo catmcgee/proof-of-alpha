@@ -225,19 +225,15 @@ export default function GenerateProof() {
   let mainContent;
   if (state.hasBeenSetup && state.accountExists) {
     mainContent = (
-      <div className="justify-center items-center">
-        <div className="p-0">
-          <div>
-            <img className="max-w-sm" src="http://localhost:9000/assets/qr-code.png" alt='Proof image with QR code' />
-            <div className="my-4 text-sm text-center">
-              <p>http://localhost:9000/B62qizDkmrBBFjPUmgBzRHrVMGWKZQqAEWuuofVYY7FeDcwAYqn8E11</p>
-              <button className='py-2 px-4 mt-2 font-semibold rounded-lg shadow-md text-white bg-blue-500 hover:bg-blue-700' onClick={copyImageToClipboard}>Copy Image</button>
-            </div>
-          </div>
-        </div>
+      <div className="flex flex-col items-center justify-center space-y-4 h-screen">
+        <img className="max-w-xs md:max-w-sm" src="http://localhost:9000/assets/qr-code.png" alt='Proof image with QR code' />
+        <p className="text-sm text-center whitespace-pre-wrap break-words w-2/3">http://localhost/B62qizDkmrBBFjPUmgBzRHrVMGWKZQqAEWuuofVYY7FeDcwAYqn8E11</p>
+        <button className='py-2 px-4 mt-2 font-semibold rounded-lg shadow-md text-white bg-blue-500 hover:bg-blue-700' onClick={copyImageToClipboard}>Copy Image</button>
       </div>
     );
   }
+  
+  
 
 
   let accountDoesNotExist;
