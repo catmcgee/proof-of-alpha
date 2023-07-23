@@ -31,6 +31,14 @@
       "feepayerAlias": "cat",
       "fee": "0.1",
       "smartContract": "SwapsOracle"
+    },
+    "proof-of-alpha-3": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/proof-of-alpha-3.json",
+      "feepayerKeyPath": "/Users/cat/.cache/zkapp-cli/keys/cat2.json",
+      "feepayerAlias": "cat2",
+      "fee": "0.1",
+      "smartContract": "SwapsOracle"
     }
   }
 }

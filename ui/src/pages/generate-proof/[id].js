@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import GenerateProof, { generateTransactionJSON } from '../GenerateProof';
+
 
 function ZKProof() {
   const router = useRouter();
@@ -10,10 +12,11 @@ function ZKProof() {
 
   useEffect(() => {
     const getZkProofImage = async () => {
-      const res = await axios.get(`/api/zkproof?txHash=${txHash}`);
-      setImageData(res.data);
+      if (!txHash) return;
+      // You also might have to pass the state to this function
+      const transactionJSON = await GenerateProof(); 
+      setImageData(transactionJSON);
     }
-
     getZkProofImage();
   }, [txHash]);
 
@@ -28,6 +31,7 @@ function ZKProof() {
       <h1>ZKProof for transaction: {txHash}</h1>
       {imageData && 
         <div>
+          { /* Here this image might be a qr code that has been converted to base64 */ }
           <img ref={imgRef} src={`data:image/png;base64,${imageData}`} alt='Proof image with QR code' />
           <button onClick={copyImageToClipboard}>Copy Image</button>
         </div>

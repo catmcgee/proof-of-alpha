@@ -19,6 +19,7 @@ const privateKey = PrivateKey.fromBase58(
     "EKEFbfuextCwUWrWBFj1NPvhQDiMP2wB4NiT6aCJJWRyhbjiTyuD"
 );
 
+const ORACLE_PUBLIC_KEY =  PublicKey.fromBase58("B62qphyUJg3TjMKi74T2rF8Yer5rQjBr1UyEG7Wg9XEYAHjaSiSqFv1")
 // ---------------------------------------------------------------------------------------
 
 const functions = {
@@ -61,12 +62,13 @@ const functions = {
 
 
     const signature = Signature.create(privateKey, [txId, walletId]);
+    console.log("created signature", signature)
     const publicKey = PublicKey.fromBase58(args.publicKey58);
-    // Before calling verify function
-console.log("Public Key being passed to verify: ", publicKey);
+    console.log("public key from zkappworker", publicKey);
+  
 
    // create the tx
-    const tx = await Mina.transaction(publicKey, () => state.zkapp.verify(txId, walletId, publicKey, signature)
+    const tx = await Mina.transaction(publicKey, () => state.zkapp.verify(txId, walletId, ORACLE_PUBLIC_KEY, signature)
     );
     await tx.prove();
     await tx.send();

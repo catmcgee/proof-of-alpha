@@ -14,7 +14,7 @@ import {
 
 // The public key of our trusted data provider
 const ORACLE_PUBLIC_KEY =
-  'B62qpTtGBS5WjpQWzsu6rj8Z7pSvxQaXjABt8AnZg48Z8AsaCnCYTtW';
+  'B62qphyUJg3TjMKi74T2rF8Yer5rQjBr1UyEG7Wg9XEYAHjaSiSqFv1';
 
 export class SwapsOracle extends SmartContract {
   // Define contract state
@@ -47,7 +47,7 @@ export class SwapsOracle extends SmartContract {
     publicKey: PublicKey,
     signature: Signature
   ) {
-    console.log('netering verify method in swapsoracle');
+    // return true;
     // Get the oracle public key from the contract state
     const oraclePublicKey = this.oraclePublicKey.get();
     this.oraclePublicKey.assertEquals(oraclePublicKey);
@@ -61,8 +61,10 @@ export class SwapsOracle extends SmartContract {
     Provable.asProver(() => {
       const boolValue = validSignature.toBoolean();
       console.log('Valid Signature2 ?: ', boolValue);
+      console.log('id is', id.toString());
+      console.log('walletid is', walletId.toString());
+      console.log('signature is', signature);
     });
-    // Check that the signature is valid
     validSignature.assertTrue();
     console.log('assert thing', validSignature.assertTrue());
 

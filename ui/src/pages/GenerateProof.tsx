@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './reactCOIServiceWorker';
 import ZkappWorkerClient from './zkappWorkerClient';
 import { PublicKey, Field, PrivateKey } from 'snarkyjs';
-import GradientBG from '../components/GradientBG.js';
-import styles from '../styles/Home.module.css';
-import { verify } from 'crypto';
+import QRCode from 'qrcode';
 
 let transactionFee = 0.1;
 
-export default function Home() {
+export default function GenerateProof() {
   const [state, setState] = useState({
     zkappWorkerClient: null as null | ZkappWorkerClient,
     hasWallet: null as null | boolean,
@@ -18,11 +16,18 @@ export default function Home() {
     zkappPublicKey: null as null | PublicKey,
     creatingTransaction: false,
   });
-
-
+  const [imageData, setImageData] = useState(null);
+  const imgRef = useRef(null);
+  const transactionHash = "0x07aac1d5997e4cb1c6bd88b15ab4500ef7dfe0b70919fdb69da62d9398e0b7bf"
+  const copyImageToClipboard = () => {
+    const imageUrl = imgRef.current.src;
+    const newWindow = window.open();
+    newWindow.document.write('<img src="' + imageUrl + '">');
+  }
+  
   const privateKey = PrivateKey.fromBase58(
     process.env.PRIVATE_KEY ??
-      "EKEMMSEuAK8ybJ7Vxuf4Br4CtSZ8t7utt7ycgSjvRariHKVQQrck"
+      "EKDm39kzoTsvr1rdyNu3nmEkFY5w2xT4Ut1er1zuuoaqAMWVeoAY"
   );
 
   const [displayText, setDisplayText] = useState('');
@@ -82,7 +87,7 @@ export default function Home() {
         setDisplayText('zkApp compiled...');
 
         const zkappPublicKey = PublicKey.fromBase58(
-          'B62qpTtGBS5WjpQWzsu6rj8Z7pSvxQaXjABt8AnZg48Z8AsaCnCYTtW'
+          'B62qqFqt2cYqF6AAEyDRXnj13YvhtYkYFfeNtGD4Zwx9kuQqp1W9G6T'
         );
 
         await zkappWorkerClient.initZkappInstance(zkappPublicKey);
@@ -175,6 +180,19 @@ export default function Home() {
 
   };
 
+  useEffect(() => {
+    const getZkProofImage = async () => {
+        if (!transactionHash) return;
+        try {
+            const url = await QRCode.toDataURL(transactionHash);
+            setImageData(url);
+        } catch (err) {
+            console.log('Error generating QR code', err);
+        }
+    }
+    getZkProofImage();
+}, [transactionHash]);
+
   // -------------------------------------------------------
   // Refresh the current state
 
@@ -207,7 +225,7 @@ export default function Home() {
 
   let setup = (
     <div
-      className={styles.start}
+     
       style={{ fontWeight: 'bold', fontSize: '1.5rem', paddingBottom: '5rem' }}
     >
       {stepDisplay}
@@ -229,36 +247,33 @@ export default function Home() {
     );
   }
 
+  
+
   let mainContent;
   if (state.hasBeenSetup && state.accountExists) {
     mainContent = (
       <div style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <div className={styles.center} style={{ padding: 0 }}>
-          Waddup
+        <div style={{ padding: 0 }}>
+          {imageData && 
+            <div>
+              <img ref={imgRef} src={imageData} alt='Proof image with QR code' />
+              <button onClick={copyImageToClipboard}>Copy Image</button>
+            </div>
+          }
         </div>
-        <button
-          className={styles.card}
-          //  onClick= {ZkappWorkerClient.verify()}
-          disabled={state.creatingTransaction}
-        >
-          Send Transaction
-        </button>
-        <button className={styles.card}>
-          Get Latest State
-        </button>
       </div>
     );
   }
 
   return (
-    <GradientBG>
-      <div className={styles.main} style={{ padding: 0 }}>
-        <div className={styles.center} style={{ padding: 0 }}>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="p-6 max-w-sm mx-auto bg-gray-800 rounded-xl shadow-md flex items-center space-x-4">
+        <div className="flex-shrink-0">
           {setup}
           {accountDoesNotExist}
           {mainContent}
         </div>
       </div>
-    </GradientBG>
+    </div>
   );
 }

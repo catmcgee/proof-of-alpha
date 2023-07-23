@@ -44,7 +44,7 @@ async function getSignedTransactionData(transactionId) {
 
   const privateKey = PrivateKey.fromBase58(
     process.env.PRIVATE_KEY ??
-      "EKEMMSEuAK8ybJ7Vxuf4Br4CtSZ8t7utt7ycgSjvRariHKVQQrck"
+      "EKF65JKw9Q1XWLDZyZNGysBbYG21QbJf3a4xnEoZPZ28LKYGMw53"
   );
   
   // Get transaction details
@@ -59,17 +59,10 @@ async function getSignedTransactionData(transactionId) {
   const id = Field(transactionId);
   console.log("public key", publicKey, "and id", id)
   const signature = Signature.create(privateKey, [id, walletId]);
-  
-  // Before returning, to ensure nothing changes
-console.log("Returning data:", {
-  data: { id: id, walletId: walletId },
-  signature: signature,
-  publicKey: publicKey,
-});
+  console.log("signature from oracle", signature)
 
 
   return {
-    
     data: { id: id, walletId: walletId },
     signature: signature,
     publicKey: publicKey,
@@ -80,8 +73,6 @@ router.get("/transaction/:id", async (ctx) => {
   const result = await getSignedTransactionData(ctx.params.id);
   ctx.body = result;
   // After creating signature and publicKey
-console.log("Signature: ", signature);
-console.log("Public Key: ", publicKey);
 
 
 });
